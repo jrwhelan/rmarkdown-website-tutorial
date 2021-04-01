@@ -2,6 +2,7 @@
 suppressPackageStartupMessages({
   library(tidyverse)
   library(stringr)
+  library(vitae)
 })
 
 ## variables I need for my site 
