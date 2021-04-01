@@ -4,6 +4,8 @@ navbar:
   left:
     - text: "First Observations"
       href: first_observations.html
+    - text: "Resume"
+      href: JoshWhelan_Resume
     - text: "Basic Workflow"
       href: basic_workflow.html
     - text: "Getting Sophisticated"

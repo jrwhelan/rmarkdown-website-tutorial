@@ -1,0 +1,119 @@
+---
+name: Josh
+surname: Whelan
+position: "Choice Modeling and Data Analytics"
+address: "Toronto, ON"
+phone: "416-938-4834"
+email: "jrwhelan@me.com"
+linkedin: joshwhelan
+
+docname: "Resume"
+date: "`r format(Sys.time(), '%B %Y')`"
+output: vitae::awesomecv
+headcolor: 414141
+
+profilepic: "DSC00454.JPG"
+#www: joshwhelan.ca
+#github: tallguyjenks
+keywords: RMarkdown, Rmd, Resume
+
+fontfamily: mathpazo
+fontfamilyoptions: sc, osf
+fontsize: 12pt
+linkcolor: blue
+urlcolor: blue
+
+aboutme: "I like to break down problems to build pragmatic solutions. Coming from a background of economics and mathematics, I enjoy the challenge of creating well designed experiments and models to test hypotheses and produce informative analytics tools to forecast possibilities."
+---
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(vitae)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+<!-- # Professional Goal -->
+
+<!-- GOAL TEXT WOULD GO HERE -->
+
+# Skills
+
+## Data Science
+
+* Discrete choice models, data wrangling, hierarchical Bayesian modeling, regression analysis, process automation, dynamic reports, survey analysis, classification
+
+
+## Languages & Applications
+
+* Expertise with R: tidyverse and tidy data principles, Shiny applications, Rmarkdown reports
+  * Extensive experience in market research applications: MaxDiff, Conjoint, Virtual Shopping exercises
+ <!--   * This resume was built with Rmarkdown and the `vitae` package -->
+* Expertise with MS Excel: VBA, share of preference and volumetric simulators
+* Experience with Python, SQL, AWS
+
+<!--
+## Leadership
+
+* Managing and mentoring junior team members
+* Adept communicator with experience presenting complex concepts to both technical and non-technical audiences
+-->
+
+# Experience
+```{r}
+tribble(
+  ~ role, ~ company, ~ loc, ~ dates, ~ details,
+  "Choice Modeling and Data Analytics Manager", "Dig Insights", "Toronto, ON", "May 2018 - Present", "Modeling and analyzing consumer preferences through hierarchical Bayes estimation with both R and Sawtooth Software",
+
+  "Choice Modeling and Data Analytics Manager", "Dig Insights", "Toronto, ON", "May 2018 - Present", "Creating informative simulators in Excel and R from random utility maximization models to forecast preferences towards new consumer products or concepts",
+
+  "Choice Modeling and Data Analytics Manager", "Dig Insights", "Toronto, ON", "May 2018 - Present", "Creating and testing experimental designs for quantitative survey methods in a variety of frameworks including MaxDiff, choice-based conjoint (CBC), and full virtual market discrete choice",
+
+  "Choice Modeling and Data Analytics Manager", "Dig Insights", "Toronto, ON", "May 2018 - Present", "Collaborating with government agencies and nonprofit organizations to lead quantitative research and conduct evaluation of programs in social return of investment contexts",
+
+  "Choice Modeling and Data Analytics Manager", "Dig Insights", "Toronto, ON", "May 2018 - Present", "Managing and mentoring junior team members and planning around multiple agile projects with competing deadlines",
+
+  "Choice Modeling and Data Analytics Manager", "Dig Insights", "Toronto, ON", "May 2018 - Present", "Building tools to reduce outsourcing of manual tasks or to automate processes and enable research teams to work more independently, save time, and work more efficiently",
+
+  "Choice Modeling and Data Analytics Manager", "Dig Insights", "Toronto, ON", "May 2018 - Present", "Developing and testing new methodologies for choice modeling projects",
+
+  "Research Assistant", "McMaster University", "Hamilton, ON", "Sep 2015 - Sep 2018", "Collaborated with professors in research projects, writing on findings and using Stata and MS Excel to clean and analyze data for empirical studies",
+
+  "Research Assistant", "McMaster University", "Hamilton, ON", "Sep 2015 - Sep 2018", "Cleaned and restructured datasets secured in the Public Economics Data Analysis Laboratory to generate reports on confidential data for clients",
+
+#  "Research Assistant", "McMaster University", "Hamilton, ON", "Sep 2015 - Sep 2018", "Studied advanced statistical methods and econometrics in the Department of Economics",
+
+  "Online Product Analyst", "Thomson Reuters", "Toronto, ON", "Aug 2014 - Sep 2015", "Communicated and coordinated between management and development teams, ensuring teams were aligned on goals and capabilities",
+
+  "Online Product Analyst", "Thomson Reuters", "Toronto, ON", "Aug 2014 - Sep 2015", "Performed QA testing for active and upcoming online legal research products and prioritizing bugs for the development team",
+
+  "Junior Business Analyst", "Catlin Canada", "Toronto, ON", "Dec 2013 - Aug 2014", "Developed relational database solutions with Filemaker Pro and SQL to identify and analyze trends and opportunities",
+
+  "Junior Business Analyst", "Catlin Canada", "Toronto, ON", "Dec 2013 - Aug 2014", "Designed, tested, and debugged user interfaces for in-house databases and reports",
+
+ # "Junior Business Analyst", "Catlin Canada", "Toronto, ON", "Dec 2013 - Aug 2014", "Assisted in project planning and organization within a team of business analysts"
+
+  #"Teaching Assistant", "York University", "Toronto, ON", "Sep 2012 - Sep 2013", "Taught seminars and held office hours to teach and tutor economic principles to students both in groups and individually",
+
+  #"Management Analyst", "Government of Newfoundland and Labrador", "St. John's, NL", "2012", "Created a database of geospatial data on moose vehicle collisions (MVC) in the province to aid policy decisions using MS Excel and Google Earth",
+
+  #"Management Analyst", "Government of Newfoundland and Labrador", "St. John's, NL", "2012", "Strengthened the existing provincial MVC data by adding uncertainty measures through analysis of raw data sources"
+ ) %>% 
+  detailed_entries(role, dates, company, loc, details)
+  #detailed_entries(what, when, with, where, why)
+  #brief_entries(what, when, with)
+
+```
+
+
+# Education
+```{r}
+tribble(
+  ~ degree, ~ uni, ~ loc, ~ dates, ~ details,
+  "MA, Economics", "York University", "Toronto, ON", "2012 - 2013","Research Assistant",
+
+  "BSc Joint Honours, Economics & Applied Mathematics", "Memorial University of Newfoundland", "St. John's, NL", "2007 - 2012","Ernest Joseph Scholarship"
+) %>% 
+  detailed_entries(degree, dates, uni, loc)
+```
+
