@@ -2,7 +2,6 @@
 suppressPackageStartupMessages({
   library(tidyverse)
   library(stringr)
-  library(vitae)
 })
 
 ## variables I need for my site 
@@ -12,3 +11,7 @@ data <- readr::read_csv('important_data.csv')
 ## knitr options I want set as default for all ('global') code chunks
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
+
+#  setwd("repos")
+#  setwd("rmarkdown-website-tutorial")
+#  rmarkdown::render_site()
