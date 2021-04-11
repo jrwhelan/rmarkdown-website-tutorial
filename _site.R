@@ -12,6 +12,5 @@ data <- readr::read_csv('important_data.csv')
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 
-#  setwd("repos")
-#  setwd("rmarkdown-website-tutorial")
+#  setwd("repos/website")
 #  rmarkdown::render_site()
