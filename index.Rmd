@@ -10,7 +10,8 @@ output:
 
 This is a space for myself to try different things with technical analysis through R and other tools. Shared in the toolbar on the top of the page, find examples of some interesting dashboard creations or data analysis tools.
 
-----
 
 *This website has been created using [RStudio's R Markdown](http://rmarkdown.rstudio.com/) and hosted on [Github](http://github.com).*
- 
+  
+
+----

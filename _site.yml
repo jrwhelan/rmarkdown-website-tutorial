@@ -15,5 +15,5 @@ output:
   html_document:
     theme: lumen
     highlight: textmate
-#    include:
-#      after_body: _footer.html
+    include:
+      after_body: _footer.html
