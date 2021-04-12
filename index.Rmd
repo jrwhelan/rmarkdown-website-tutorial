@@ -1,5 +1,5 @@
 ---
-title: "Rmd Website and Portfolio"
+title: "Rmarkdown Website and Portfolio"
 author:  "[Josh Whelan](https://github.com/jrwhelan)"
 output:
   html_document:
