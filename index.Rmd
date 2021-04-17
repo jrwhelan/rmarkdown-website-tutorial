@@ -1,6 +1,6 @@
 ---
 title: "Rmarkdown Website and Portfolio"
-author:  "[Josh Whelan](https://github.com/jrwhelan)"
+author:  "[Josh Whelan - Github](https://github.com/jrwhelan)"
 output:
   html_document:
     fig_width: 1
