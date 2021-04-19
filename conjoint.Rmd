@@ -9,8 +9,20 @@ Discrete choice models enable market researchers to make predictions on what kin
 These choice models take many different forms, but one common type in market research is `conjoint` analysis. The conjoint analysis technique proposes that products are broken down to components or main features, which can then vary randomly among a set of options. By building sets of options with strategic, or random, variations and asking survey respondents to say which (if any) they would purchase on a shopping trip we can model the choices to determine a valuation for each component. Then we can use those results to optimize product offering to give them the best chance to get attention from customers.
 
 
-[`formr`](https://formr.org) offers an interesting interface to build and run surveys with `R`. Because it leverages `R` code, you can run code chunks within a survey, which allows us to do a lot of interesting things with experimental designs and choice experiments, but for now we consider a basic conjoint example.
+[`formr`](https://formr.org) offers an interesting interface to build and run surveys with `R`. Because it leverages `R` code, you can run code chunks within a survey, which allows us to do a lot of interesting things with experimental designs and choice experiments, we consider a conjoint exercise in here.
 
 ----
+
+
+## formr
+
+To use [`formr`](https://formr.org), sign up on their website and request an admin token from the developers. This admin token allows you to set up surveys by specifying questions in a Google Sheet or .xlsx document. They provide an example demo of question types [here](https://formr.org/documentation#sample_survey_sheet).
+
+
+----
+
+## Design
+
+Choice methodologies are constructed as an experiment, where we ask respondents to consider a set of alternatives and choose their favourite or what they would buy on a shopping trip. As we attempt to build a random utility maximization model around the components of products, we want our model to be able to disentangle the values of various components by building an efficient design.
 
 
