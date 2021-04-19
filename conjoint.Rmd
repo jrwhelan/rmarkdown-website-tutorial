@@ -9,7 +9,8 @@ Discrete choice models enable market researchers to make predictions on what kin
 These choice models take many different forms, but one common type in market research is `conjoint` analysis. The conjoint analysis technique proposes that products are broken down to components or main features, which can then vary randomly among a set of options. By building sets of options with strategic, or random, variations and asking survey respondents to say which (if any) they would purchase on a shopping trip we can model the choices to determine a valuation for each component. Then we can use those results to optimize product offering to give them the best chance to get attention from customers.
 
 
-[`formr`](https://formr.org) offers an interesting interface to build and run surveys with `R`.
-
+[`formr`](https://formr.org) offers an interesting interface to build and run surveys with `R`. Because it leverages `R` code, you can run code chunks within a survey, which allows us to do a lot of interesting things with experimental designs and choice experiments, but for now we consider a basic conjoint example.
 
 ----
+
+
