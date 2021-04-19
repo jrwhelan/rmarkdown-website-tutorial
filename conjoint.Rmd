@@ -18,6 +18,8 @@ These choice models take many different forms, but one common type in market res
 
 To use [`formr`](https://formr.org), sign up on their website and request an admin token from the developers. This admin token allows you to set up surveys by specifying questions in a Google Sheet or .xlsx document. They provide an example demo of question types [here](https://formr.org/documentation#sample_survey_sheet).
 
+One helpful resource along my way was another [conjoint tutorial](https://github.com/jhelvy/formr4conjoint) for formr by [John Helveston](https://github.com/jhelvy).
+
 
 ----
 
