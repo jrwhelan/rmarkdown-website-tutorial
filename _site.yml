@@ -2,6 +2,8 @@ name: "R Markdown Websites Tutorial"
 navbar:
   title: "HOME"
   left:
+    - text: "Basketball Prediction"
+      href: nbahb.html
     - text: "Conjoint Analysis"
       href: conjoint.html
     #- text: "Basic Workflow"

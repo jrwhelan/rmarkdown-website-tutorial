@@ -1,0 +1,50 @@
+---
+title: "Basketball Prediction"
+---
+
+## Introduction
+
+
+----
+
+
+## Data
+
+```{r dataload, echo=T, warning=FALSE, message=F}
+library(nbastatR)
+library(tidyverse)
+library(lubridate)
+
+today <- today(tzone = "EST")
+historyCut <- year(today)-2
+
+playerRef <- nba_players()
+teamRef <- nba_teams()
+
+playerLogs <- game_logs(
+  seasons = 2019,
+  league = "NBA",
+  result_types = "player",
+  season_types = "Regular Season",
+  nest_data = F,
+  assign_to_environment = TRUE,
+  return_message = TRUE
+)
+
+teamLogs <- game_logs(
+  seasons = historyCut:year(today),
+  league = "NBA",
+  result_types = "team",
+  season_types = "Regular Season",
+  nest_data = F,
+  assign_to_environment = TRUE,
+  return_message = TRUE
+)
+
+```
+
+----
+
+
+
+
