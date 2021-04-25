@@ -274,65 +274,53 @@ $(document).ready(function () {
 <h2>Data</h2>
 <p>The <a href="http://asbcllc.com/nbastatR/index.html"><code>nbastatR</code></a> package for <code>R</code> is a conventient API wrapper to pull rich player and game statistics from the NBA Stats API and Basketball-Reference (as well as other sources for non-NBA basketball leagues). You can install the package through github with devtools.</p>
 <p>We’ll load in the team and player reference tables, as well as game data for the past 3 seasons. We’ll then transform the data structure somewhat in preparation for analysis. To starts, let’s create dummy variables of the winners and losers for each game.</p>
-<pre class="r"><code>library(nbastatR)
-library(tidyverse)
-library(lubridate)
-
-today &lt;- today(tzone = &quot;EST&quot;)
-historyCut &lt;- year(today)-2
-
-playerRef &lt;- nba_players()
-teamRef &lt;- nba_teams()
-
-teamCodes &lt;- teamRef %&gt;%
-    dplyr::select(slugTeam, idTeam)
-
-playerLogs &lt;- game_logs(
-  seasons = 2019,
-  league = &quot;NBA&quot;,
-  result_types = &quot;player&quot;,
-  season_types = &quot;Regular Season&quot;,
-  nest_data = F,
-  assign_to_environment = TRUE,
-  return_message = TRUE
-)</code></pre>
 <pre><code>## Acquiring NBA basic player game logs for the 2018-19 Regular Season</code></pre>
-<pre class="r"><code>teamLogs &lt;- game_logs(
-  seasons = historyCut:year(today),
-  league = &quot;NBA&quot;,
-  result_types = &quot;team&quot;,
-  season_types = &quot;Regular Season&quot;,
-  nest_data = F,
-  assign_to_environment = TRUE,
-  return_message = TRUE
-) %&gt;%
-    dplyr::filter(locationGame==&quot;H&quot;)</code></pre>
-<pre><code>## Acquiring NBA basic team game logs for the 2018-19 Regular Season
-## Acquiring NBA basic team game logs for the 2019-20 Regular Season
-## Acquiring NBA basic team game logs for the 2020-21 Regular Season</code></pre>
-<pre class="r"><code>winners &lt;- teamLogs %&gt;%
-    mutate(n=1) %&gt;%
-    pivot_wider(
-      id_cols = idGame,
-      names_from = slugTeamWinner,
-      names_prefix = &quot;win_&quot;,
-      values_from = n,
-      values_fill = list(n = 0)
-    )
+<pre><code>## Warning: All elements of `...` must be named.
+## Did you want `dataTables = c(typeSeason, dateGame, idGame, numberGameTeamSeason, nameTeam, 
+##     idTeam, isB2B, isB2BFirst, isB2BSecond, locationGame, slugMatchup, 
+##     slugTeam, countDaysRestTeam, countDaysNextGameTeam, slugOpponent, 
+##     slugTeamWinner, slugTeamLoser, outcomeGame, namePlayer, numberGamePlayerSeason, 
+##     countDaysRestPlayer, countDaysNextGamePlayer, idPlayer, isWin, 
+##     fgm, fga, pctFG, fg3m, fg3a, pctFG3, pctFT, hasVideo, fg2m, 
+##     fg2a, pctFG2, minutes, ftm, fta, oreb, dreb, treb, ast, stl, 
+##     blk, tov, pf, pts, plusminus, fpts, urlTeamSeasonLogo, urlPlayerStats, 
+##     urlPlayerThumbnail, urlPlayerHeadshot, urlPlayerActionPhoto, 
+##     urlPlayerPhoto)`?</code></pre>
+<pre><code>## Warning: `cols` is now required when using unnest().
+## Please use `cols = c(dataTables)`</code></pre>
+<pre><code>## Acquiring NBA basic team game logs for the 2018-19 Regular Season</code></pre>
+<pre><code>## Warning: All elements of `...` must be named.
+## Did you want `dataTables = c(typeSeason, dateGame, idGame, numberGameTeamSeason, nameTeam, 
+##     idTeam, isB2B, isB2BFirst, isB2BSecond, locationGame, slugMatchup, 
+##     slugTeam, countDaysRestTeam, countDaysNextGameTeam, slugOpponent, 
+##     slugTeamWinner, slugTeamLoser, outcomeGame, isWin, fgmTeam, 
+##     fgaTeam, pctFGTeam, fg3mTeam, fg3aTeam, pctFG3Team, pctFTTeam, 
+##     hasVideo, fg2mTeam, fg2aTeam, pctFG2Team, minutesTeam, ftmTeam, 
+##     ftaTeam, orebTeam, drebTeam, trebTeam, astTeam, stlTeam, 
+##     blkTeam, tovTeam, pfTeam, ptsTeam, plusminusTeam, urlTeamSeasonLogo)`?</code></pre>
+<pre><code>## Acquiring NBA basic team game logs for the 2019-20 Regular Season</code></pre>
+<pre><code>## Warning: All elements of `...` must be named.
+## Did you want `dataTables = c(typeSeason, dateGame, idGame, numberGameTeamSeason, nameTeam, 
+##     idTeam, isB2B, isB2BFirst, isB2BSecond, locationGame, slugMatchup, 
+##     slugTeam, countDaysRestTeam, countDaysNextGameTeam, slugOpponent, 
+##     slugTeamWinner, slugTeamLoser, outcomeGame, isWin, fgmTeam, 
+##     fgaTeam, pctFGTeam, fg3mTeam, fg3aTeam, pctFG3Team, pctFTTeam, 
+##     hasVideo, fg2mTeam, fg2aTeam, pctFG2Team, minutesTeam, ftmTeam, 
+##     ftaTeam, orebTeam, drebTeam, trebTeam, astTeam, stlTeam, 
+##     blkTeam, tovTeam, pfTeam, ptsTeam, plusminusTeam, urlTeamSeasonLogo)`?</code></pre>
+<pre><code>## Acquiring NBA basic team game logs for the 2020-21 Regular Season</code></pre>
+<pre><code>## Warning: All elements of `...` must be named.
+## Did you want `dataTables = c(typeSeason, dateGame, idGame, numberGameTeamSeason, nameTeam, 
+##     idTeam, isB2B, isB2BFirst, isB2BSecond, locationGame, slugMatchup, 
+##     slugTeam, countDaysRestTeam, countDaysNextGameTeam, slugOpponent, 
+##     slugTeamWinner, slugTeamLoser, outcomeGame, isWin, fgmTeam, 
+##     fgaTeam, pctFGTeam, fg3mTeam, fg3aTeam, pctFG3Team, pctFTTeam, 
+##     hasVideo, fg2mTeam, fg2aTeam, pctFG2Team, minutesTeam, ftmTeam, 
+##     ftaTeam, orebTeam, drebTeam, trebTeam, astTeam, stlTeam, 
+##     blkTeam, tovTeam, pfTeam, ptsTeam, plusminusTeam, urlTeamSeasonLogo)`?
 
-
-losers &lt;- teamLogs %&gt;%
-    mutate(n=1) %&gt;%
-    pivot_wider(
-      id_cols = idGame,
-      names_from = slugTeamLoser,
-      names_prefix = &quot;lose_&quot;,
-      values_from = n,
-      values_fill = list(n = 0)
-    )
-
-winloss &lt;- winners %&gt;%
-    left_join(losers)</code></pre>
+## Warning: `cols` is now required when using unnest().
+## Please use `cols = c(dataTables)`</code></pre>
 <hr />
 </div>
 <div id="the-model" class="section level2">

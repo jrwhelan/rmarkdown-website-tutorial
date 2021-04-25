@@ -18,7 +18,7 @@ The [`nbastatR`](http://asbcllc.com/nbastatR/index.html) package for `R` is a co
 We'll load in the team and player reference tables, as well as game data for the past 3 seasons. We'll then transform the data structure somewhat in preparation for analysis. To starts, let's create dummy variables of the winners and losers for each game.
 
 
-```{r dataload, echo=T, warning=FALSE, message=F}
+```{r dataload, echo=FALSE, message=F}
 library(nbastatR)
 library(tidyverse)
 library(lubridate)
@@ -38,6 +38,7 @@ playerLogs <- game_logs(
   result_types = "player",
   season_types = "Regular Season",
   nest_data = F,
+  cols = c(dataTables),
   assign_to_environment = TRUE,
   return_message = TRUE
 )
@@ -48,6 +49,7 @@ teamLogs <- game_logs(
   result_types = "team",
   season_types = "Regular Season",
   nest_data = F,
+  cols = c(dataTables),
   assign_to_environment = TRUE,
   return_message = TRUE
 ) %>%
