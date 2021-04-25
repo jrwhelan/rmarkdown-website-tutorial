@@ -1,24 +1,4 @@
----
-title: "Basketball Prediction"
----
 
-## Introduction
-
-Basketball games in the NBA are nice for a logistic regression approach because they only have two possible outcomes: you win or you lose. We dont have to deal with draws, even in the regular season.
-
-We can use a individual team effects in a logistic regression approach to estimate the likelihood that a specific team gets a win against another given team. Clearly stated, we might ask based on the last 3 seasons of games, what's the probability that the Toronto Raptors beat in the Golden State Warriors for a game played in the Bay Area?
-
-
-----
-
-## Data
-
-The [`nbastatR`](http://asbcllc.com/nbastatR/index.html) package for `R` is a conventient API wrapper to pull rich player and game statistics from the NBA Stats API and Basketball-Reference (as well as other sources for non-NBA basketball leagues). You can install the package through github with devtools.
-
-We'll load in the team and player reference tables, as well as game data for the past 3 seasons. We'll then transform the data structure somewhat in preparation for analysis. To starts, let's create dummy variables of the winners and losers for each game.
-
-
-```{r dataload, echo=T, warning=FALSE, message=F}
 library(nbastatR)
 library(tidyverse)
 library(lubridate)
@@ -75,37 +55,57 @@ losers <- teamLogs %>%
       values_fill = list(n = 0)
     )
 
+homeID <- teamLogs %>%
+  dplyr::select(idGame, idTeam)
+
+
 winloss <- winners %>%
-	left_join(losers)
+	left_join(losers) %>%
+  left_join(homeID) %>%
+  dplyr::rename(ID = idTeam) %>%
+  dplyr::select(ID, everything(), -idGame) %>%
+  arrange(ID)
 
-```
-
-----
 
 
-## The Model
 
-Hierarchical Bayesian Logistic Regression
 
-```{r modelling}
+
+
+
+
+
 library(RSGHB)
 library(glue)
 
 choicedata <- winloss %>%
-	rename(ID = idGame) %>%
-	arrange(ID)
+  dplyr::mutate(Choice = 1, choice1 = 1, choice2 = 0)
 
 teamnames <- teamLogs %>%
-	dplyr::select(slugTeam) %>%
+	dplyr::select(slugTeam, idTeam) %>%
 	dplyr::distinct()
 
 teamList <- teamnames$slugTeam
 
-# ---------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------------------------
 # THE LIKELIHOOD FUCNTION
+
+fixed <- FALSE
+
+if (fixed==TRUE) {
+# FIXED PARAMS
+n <- ""
+for (i in 1:length(teamList)){
+  n <- glue('{n} B_{teamList[i]} <- fc[cc]; cc <- cc + 1;')
+}
+} else {
+# RANDOM PARAMS
 n <- ""
 for (i in 1:length(teamList)){
 	n <- glue('{n} B_{teamList[i]} <- b[, cc]; cc <- cc + 1;')
+}
 }
 
 g1 <- glue('v1 <- ')
@@ -120,44 +120,54 @@ for (i in 1:(length(teamList)-1)){
 }
 g2 <- glue('{g2} B_{teamList[length(teamList)]}*choicedata$lose_{teamList[length(teamList)]} ')
 
-j <- glue('p <- (exp(v1)) / (exp(v1) + exp(v2))')
+j <- glue('p <- (exp(v1)*choicedata$choice1 + exp(v2)*choicedata$choice2) / (exp(v1) + exp(v2))')
 z <- glue('likelihood <- function(fc, b) {{ cc <- 1; {n} {g1}; {g2}; {j}; return(p) }}')
 eval(parse(text=z))
-# ---------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------------------------
 
-# used for output
-modelname <- "simpleCompare" 
 
-#parameter names
-gVarNamesNormal <- glue("B_{teamList}")
-number_of_parameters <- length(gVarNamesNormal)
 
-# price is negative log normal, gDist = 3
-gDIST <- c(rep(1, length(teamList)))
-#gVarNamesFixed <- paste0("lambda",1:4)
-
-# STARTING VALUES
-svN <- rep(0, number_of_parameters)     # for the random coefficients
-#FC  <- c(0.5, 0.5, 0.5, 0.5)           # for the fixed coefficients
-
-# price constraints
-#constraintsNorm <- list(c(38, 1, 0))
-#constraintsNorm <- list(c(44, 1, 43), c(43, 1, 42), c(42, 1, 41), c(41, 1, 40), c(40, 1, 39), c(39, 1, 38))
 
 
 # ITERATION SETTINGS
-gNCREP    <- 50000  # Number of iterations to use prior to convergence
-gNEREP    <- 2000  # Number of iterations to keep for averaging after convergence has been reached
+gNCREP    <- 5000  # Number of iterations to use prior to convergence
+gNEREP    <- 200  # Number of iterations to keep for averaging after convergence has been reached
 gNSKIP    <- 10   # Number of iterations to do in between retaining draws for averaging
 gINFOSKIP <- 1000    # How frequently to print info about the iteration process
+
+
+
+
+
+if (fixed==TRUE) {
+# FIXED PARAMS
+modelname <- "simpleCompare-aggregate" 
+gVarNamesFixed <- glue("B_{teamList}")
+FC <- rep(0, length(teamList))         # for the fixed coefficients
+
+control <- list(
+  modelname = modelname,
+  gVarNamesFixed = gVarNamesFixed,
+  FC = FC,
+  gNCREP = gNCREP,
+  gNEREP = gNEREP,
+  gNSKIP = gNSKIP,
+  gINFOSKIP = gINFOSKIP,
+  targetAcceptanceNormal = 0.234,
+  gSeed = 1984
+)
+} else {
+# RANDOM PARAMS
+modelname <- "simpleCompare" 
+gVarNamesNormal <- glue("B_{teamList}")
+gDIST <- c(rep(1, length(teamList)))
+svN <- rep(0, length(teamList))     # for the random coefficients
 
 control <- list(
   modelname = modelname,
   gVarNamesNormal = gVarNamesNormal,
-  #gVarNamesFixed = gVarNamesFixed,
   svN = svN,
-  #constraintsNorm = constraintsNorm,
-  #FC = FC,
   gDIST = gDIST,
   gNCREP = gNCREP,
   gNEREP = gNEREP,
@@ -166,6 +176,7 @@ control <- list(
   targetAcceptanceNormal = 0.234,
   gSeed = 1984
 )
+}
 
 
 #HIT RATE TESTING:
@@ -183,10 +194,16 @@ model <- doHB(likelihood, choicedata, control)
 ######## save(model, file = paste0(model$modelname, ".RData"))
 
 # write the model utilities
-write.csv(model$C,"RSGHB utilities - Best - negNormP -censored.csv", row.names = FALSE)
+scores <- model$C %>%
+  as_tibble() %>%
+  dplyr::rename(idTeam = Respondent) %>%
+  left_join(teamnames) %>%
+  dplyr::rename(Team = slugTeam) %>%
+  dplyr::select(Team, everything(), -idTeam)
+  
+write.csv(scores, glue("{modelname}.csv"), row.names = FALSE)
 
-
-
-```
+# team choices
+write.csv(teamList, glue("teams.csv"), row.names = FALSE)
 
 
