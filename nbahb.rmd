@@ -4,11 +4,19 @@ title: "Basketball Prediction"
 
 ## Introduction
 
+Basketball games in the NBA are nice for a logistic regression approach because they only have two possible outcomes: you win or you lose. We dont have to deal with draws, even in the regular season.
+
+We can use a individual team effects in a logistic regression approach to estimate the likelihood that a specific team gets a win against another given team. Clearly stated, we might ask based on the last 3 seasons of games, what's the probability that the Toronto Raptors beat in the Golden State Warriors for a game played in the Bay Area?
+
 
 ----
 
-
 ## Data
+
+The [`nbastatR`](http://asbcllc.com/nbastatR/index.html) package for `R` is a conventient API wrapper to pull rich player and game statistics from the NBA Stats API and Basketball-Reference (as well as other sources for non-NBA basketball leagues). You can install the package through github with devtools.
+
+We'll load in the team and player reference tables, as well as game data for the past 3 seasons. We'll then transform the data structure somewhat in preparation for analysis. To starts, let's create dummy variables of the winners and losers for each game.
+
 
 ```{r dataload, echo=T, warning=FALSE, message=F}
 library(nbastatR)
@@ -42,11 +50,11 @@ teamLogs <- game_logs(
   nest_data = F,
   assign_to_environment = TRUE,
   return_message = TRUE
-)
+) %>%
+	dplyr::filter(locationGame=="H")
 
 
 winners <- teamLogs %>%
-    dplyr::filter(locationGame=="H") %>%
     mutate(n=1) %>%
     pivot_wider(
       id_cols = idGame,
@@ -58,7 +66,6 @@ winners <- teamLogs %>%
 
 
 losers <- teamLogs %>%
-    dplyr::filter(locationGame=="H") %>%
     mutate(n=1) %>%
     pivot_wider(
       id_cols = idGame,
@@ -76,5 +83,10 @@ winloss <- winners %>%
 ----
 
 
+## The Model
+
+```{r modelling}
+
+```
 
 
