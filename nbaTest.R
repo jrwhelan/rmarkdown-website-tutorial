@@ -131,12 +131,12 @@ eval(parse(text=z))
 
 
 # ITERATION SETTINGS
-gNCREP    <- 5000  # Number of iterations to use prior to convergence
-gNEREP    <- 200  # Number of iterations to keep for averaging after convergence has been reached
+gNCREP    <- 50000  # Number of iterations to use prior to convergence
+gNEREP    <- 2000  # Number of iterations to keep for averaging after convergence has been reached
 gNSKIP    <- 10   # Number of iterations to do in between retaining draws for averaging
 gINFOSKIP <- 1000    # How frequently to print info about the iteration process
 
-
+iters <- gNCREP + (gNEREP*gNSKIP)
 
 
 
@@ -200,10 +200,13 @@ scores <- model$C %>%
   left_join(teamnames) %>%
   dplyr::rename(Team = slugTeam) %>%
   dplyr::select(Team, everything(), -idTeam)
-  
-write.csv(scores, glue("{modelname}.csv"), row.names = FALSE)
 
-# team choices
-write.csv(teamList, glue("teams.csv"), row.names = FALSE)
+temp <- glue("B_{scores$Team}")
+orderNames <- syms(temp)
+
+scoresOrder <- scores %>%
+  dplyr::select(Team, !!!orderNames)
+  
+write.csv(scoresOrder, glue("{modelname}-{iters/1000}k.csv"), row.names = FALSE)
 
 

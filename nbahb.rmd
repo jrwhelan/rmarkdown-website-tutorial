@@ -177,13 +177,13 @@ control <- list(
 # choicedata <- dplyr::filter(choicedata, Task!=5)
 
 # Estimate the model
-model <- doHB(likelihood, choicedata, control)
+# model <- doHB(likelihood, choicedata, control)
 
 # Save model object
 ######## save(model, file = paste0(model$modelname, ".RData"))
 
 # write the model utilities
-write.csv(model$C,"RSGHB utilities - Best - negNormP -censored.csv", row.names = FALSE)
+# write.csv(model$C,"RSGHB utilities - Best - negNormP -censored.csv", row.names = FALSE)
 
 
 

@@ -11,7 +11,7 @@
 
 
 
-<title>Basic workflow</title>
+<title>Basketball Prediction</title>
 
 <script src="site_libs/header-attrs-2.7/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -259,93 +259,181 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Basic workflow</h1>
+<h1 class="title toc-ignore">Basketball Prediction</h1>
 
 </div>
 
 
-<p>Building websites uses the same reproducible workflow you can use for your analyses and collaborations. It is very iterative. You can do it all from RStudio, with a combination of clicking or typing commands as you feel comfortable.</p>
-<ol style="list-style-type: decimal">
-<li>add content (text, code, images, etc) in an RMarkdown file</li>
-<li>knit the RMarkdown file to view</li>
-<li>update <code>_site.yml</code> (perhaps, if it is a new file)</li>
-<li>build the website
-<ul>
-<li>Build tab &gt; Build Website or</li>
-<li>in the console: <code>rmarkdown::render_site()</code></li>
-</ul></li>
-<li>repeat, repeat, repeat</li>
-<li>commit and push your website to github, it’s live!</li>
-<li>repeat all of the above</li>
-</ol>
-<p>Let’s see what this looks like. We are not going to have time to learn all of the capabilities of R Markdown today, but the purpose here is to give you familiarlity with the workflow and confidence to explore further on your own.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Basketball games in the NBA are nice for a logistic regression approach because they only have two possible outcomes: you win or you lose. We dont have to deal with draws, even in the regular season.</p>
+<p>We can use a individual team effects in a logistic regression approach to estimate the likelihood that a specific team gets a win against another given team. Clearly stated, we might ask based on the last 3 seasons of games, what’s the probability that the Toronto Raptors beat in the Golden State Warriors for a game played in the Bay Area?</p>
 <hr />
-<div id="rstudio-landscape" class="section level2">
-<h2>RStudio landscape</h2>
-<p>Here is what you’ll see when you’ve opened our <code>rmarkdown-website-tutorial</code> project in RStudio.</p>
-<p>The ‘Build tab’ in the top right corner will show up once RStudio knows you’re making a website, don’t worry if you don’t have it yet.</p>
-<p>If we open <code>index.Rmd</code> we will see that it’s all text with a bit of formatting. This top part is called the ‘front matter’.</p>
-<p><img src="https://docs.google.com/drawings/d/1ff_I5VJAtmF0FYZOIFE6ZW_-8sfwfoOij2AR0eyFs00/pub?w=960&amp;h=720" /></p>
-<p><br></p>
 </div>
-<div id="markdown-syntax" class="section level2">
-<h2>Markdown Syntax</h2>
-<p>Now let’s look explore the first few webpages/R Markdown files to get familiar with Markdown syntax:</p>
-<ul>
-<li><code>index.Rmd</code></li>
-<li><code>first_observations.Rmd</code></li>
-<li><code>basic_workflow.Rmd</code></li>
-</ul>
-<p>These first few pages have simple formatting (<strong>bold</strong>, <em>italics</em>), headers, bullet points, links, and images. These are the majority of things you’ll do in Markdown. See a full list of options at <a href="http://rmarkdown.rstudio.com/authoring_basics.html"><strong>RStudio’s Markdown basics</strong></a> or go to Help &gt; Markdown Quick Reference. Also, check out their <a href="https://www.rstudio.com/resources/cheatsheets/">R Markdown cheatsheet</a>.</p>
-<p>Notice that you can insert images locally (from the /images folder), or from online e.g. Google Drawings!</p>
-<p>From <a href="http://rmarkdown.rstudio.com/lesson-8.html">rmarkdown.rstudio.com lesson 8</a>:</p>
-<p><img src="images/markdown_rmarkdownlesson-8.png" /></p>
-<p><br></p>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>The <a href="http://asbcllc.com/nbastatR/index.html"><code>nbastatR</code></a> package for <code>R</code> is a conventient API wrapper to pull rich player and game statistics from the NBA Stats API and Basketball-Reference (as well as other sources for non-NBA basketball leagues). You can install the package through github with devtools.</p>
+<p>We’ll load in the team and player reference tables, as well as game data for the past 3 seasons. We’ll then transform the data structure somewhat in preparation for analysis. To starts, let’s create dummy variables of the winners and losers for each game.</p>
+<pre class="r"><code>library(nbastatR)
+library(tidyverse)
+library(lubridate)
+
+today &lt;- today(tzone = &quot;EST&quot;)
+historyCut &lt;- year(today)-2
+
+playerRef &lt;- nba_players()
+teamRef &lt;- nba_teams()
+
+teamCodes &lt;- teamRef %&gt;%
+    dplyr::select(slugTeam, idTeam)
+
+playerLogs &lt;- game_logs(
+  seasons = 2019,
+  league = &quot;NBA&quot;,
+  result_types = &quot;player&quot;,
+  season_types = &quot;Regular Season&quot;,
+  nest_data = F,
+  assign_to_environment = TRUE,
+  return_message = TRUE
+)</code></pre>
+<pre><code>## Acquiring NBA basic player game logs for the 2018-19 Regular Season</code></pre>
+<pre class="r"><code>teamLogs &lt;- game_logs(
+  seasons = historyCut:year(today),
+  league = &quot;NBA&quot;,
+  result_types = &quot;team&quot;,
+  season_types = &quot;Regular Season&quot;,
+  nest_data = F,
+  assign_to_environment = TRUE,
+  return_message = TRUE
+) %&gt;%
+    dplyr::filter(locationGame==&quot;H&quot;)</code></pre>
+<pre><code>## Acquiring NBA basic team game logs for the 2018-19 Regular Season
+## Acquiring NBA basic team game logs for the 2019-20 Regular Season
+## Acquiring NBA basic team game logs for the 2020-21 Regular Season</code></pre>
+<pre class="r"><code>winners &lt;- teamLogs %&gt;%
+    mutate(n=1) %&gt;%
+    pivot_wider(
+      id_cols = idGame,
+      names_from = slugTeamWinner,
+      names_prefix = &quot;win_&quot;,
+      values_from = n,
+      values_fill = list(n = 0)
+    )
+
+
+losers &lt;- teamLogs %&gt;%
+    mutate(n=1) %&gt;%
+    pivot_wider(
+      id_cols = idGame,
+      names_from = slugTeamLoser,
+      names_prefix = &quot;lose_&quot;,
+      values_from = n,
+      values_fill = list(n = 0)
+    )
+
+winloss &lt;- winners %&gt;%
+    left_join(losers)</code></pre>
+<hr />
 </div>
-<div id="build-your-website" class="section level2">
-<h2>Build your website!</h2>
-<p>Let’s make a few changes to this file and knit it to inspect. Try adding some new Markdown formatted text.</p>
-<p>Also, now is a good time to make sure you have the the Build tab; you may need to install <code>rmarkdown</code> if you haven’t already (below).</p>
-<p>Click <code>Build Website</code> in the Build tab (or type <code>rmarkdown::render_site()</code> in the Console) and inspect your Website! Commit and push to see it live online.</p>
-<p><br></p>
-</div>
-<div id="other" class="section level2">
-<h2>Other</h2>
-<div id="tips-for-learning-markdown" class="section level3">
-<h3>Tips for learning Markdown</h3>
-<p><strong>In Markdown, spaces can be tricky</strong>.<br />
-To start a new line here, I needed 2 spaces after <code>tricky.</code> above. As you can see, a simple carriage return doesn’t cut it.</p>
-<p>To force carriage returns, use the <code>&lt;br&gt;</code> html tag…</p>
-<p><br> <br></p>
-<p>…like this.</p>
-<p>Also, this bulleted list won’t render properly: - because there is no carriage return between the line above - and where the bullet points start.</p>
-<p>To have the bullet points render nicely:</p>
-<ul>
-<li>you must have a full blank line</li>
-<li>following “To have the bullet points render nicely:”</li>
-</ul>
-<p><br></p>
-</div>
-<div id="building-a-website-from-scratch" class="section level3">
-<h3>Building a website from scratch</h3>
-<p>If you want to build a website from scratch (i.e. not fork this one), follow RStudio’s instructions here: <a href="https://rmarkdown.rstudio.com/rmarkdown_websites.html">R Markdown Websites</a>.</p>
-<p><strong>Troubleshooting:</strong></p>
-<p>We recently had trouble having our nicely built website display online: the website’s url only showed the README (nicely formatted though!). We solved it by adding:</p>
-<pre><code>output_dir: &quot;.&quot;</code></pre>
-<p>to the <code>_site.yml</code>. This knits all the .html files in place in the home directory instead of in a <code>_site</code> folder, and this solved our problem!</p>
-</div>
-<div id="install-the-rmarkdown-package" class="section level3">
-<h3>Install the <code>rmarkdown</code> package</h3>
-<p>You can do this by:</p>
-<ol style="list-style-type: decimal">
-<li><p>paste this code in the Console and hit enter</p>
-<pre><code>install.packages(&#39;rmarkdown&#39;)
-library(rmarkdown) </code></pre></li>
-<li><p>from the menu bar select: Tools &gt; Install Packages… “rmarkdown”</p></li>
-<li><p>from the bottom right pane, click on the Packages tab, click on Install, “rmarkdown”</p></li>
-</ol>
-<!---note that the ``` ``` syntax above renders text as a code-looking block--->
-</div>
+<div id="the-model" class="section level2">
+<h2>The Model</h2>
+<p>Hierarchical Bayesian Logistic Regression</p>
+<pre class="r"><code>library(RSGHB)
+library(glue)
+
+choicedata &lt;- winloss %&gt;%
+    rename(ID = idGame) %&gt;%
+    arrange(ID)
+
+teamnames &lt;- teamLogs %&gt;%
+    dplyr::select(slugTeam) %&gt;%
+    dplyr::distinct()
+
+teamList &lt;- teamnames$slugTeam
+
+# ---------------------------------------------------------------------------
+# THE LIKELIHOOD FUCNTION
+n &lt;- &quot;&quot;
+for (i in 1:length(teamList)){
+    n &lt;- glue(&#39;{n} B_{teamList[i]} &lt;- b[, cc]; cc &lt;- cc + 1;&#39;)
+}
+
+g1 &lt;- glue(&#39;v1 &lt;- &#39;)
+for (i in 1:(length(teamList)-1)){
+    g1 &lt;- glue(&#39;{g1} B_{teamList[i]}*choicedata$win_{teamList[i]} + &#39;)
+}
+g1 &lt;- glue(&#39;{g1} B_{teamList[length(teamList)]}*choicedata$win_{teamList[length(teamList)]} &#39;)
+
+g2 &lt;- glue(&#39;v2 &lt;- &#39;)
+for (i in 1:(length(teamList)-1)){
+    g2 &lt;- glue(&#39;{g2} B_{teamList[i]}*choicedata$lose_{teamList[i]} + &#39;)
+}
+g2 &lt;- glue(&#39;{g2} B_{teamList[length(teamList)]}*choicedata$lose_{teamList[length(teamList)]} &#39;)
+
+j &lt;- glue(&#39;p &lt;- (exp(v1)) / (exp(v1) + exp(v2))&#39;)
+z &lt;- glue(&#39;likelihood &lt;- function(fc, b) {{ cc &lt;- 1; {n} {g1}; {g2}; {j}; return(p) }}&#39;)
+eval(parse(text=z))
+# ---------------------------------------------------------------------------
+
+# used for output
+modelname &lt;- &quot;simpleCompare&quot; 
+
+#parameter names
+gVarNamesNormal &lt;- glue(&quot;B_{teamList}&quot;)
+number_of_parameters &lt;- length(gVarNamesNormal)
+
+# price is negative log normal, gDist = 3
+gDIST &lt;- c(rep(1, length(teamList)))
+#gVarNamesFixed &lt;- paste0(&quot;lambda&quot;,1:4)
+
+# STARTING VALUES
+svN &lt;- rep(0, number_of_parameters)     # for the random coefficients
+#FC  &lt;- c(0.5, 0.5, 0.5, 0.5)           # for the fixed coefficients
+
+# price constraints
+#constraintsNorm &lt;- list(c(38, 1, 0))
+#constraintsNorm &lt;- list(c(44, 1, 43), c(43, 1, 42), c(42, 1, 41), c(41, 1, 40), c(40, 1, 39), c(39, 1, 38))
+
+
+# ITERATION SETTINGS
+gNCREP    &lt;- 50000  # Number of iterations to use prior to convergence
+gNEREP    &lt;- 2000  # Number of iterations to keep for averaging after convergence has been reached
+gNSKIP    &lt;- 10   # Number of iterations to do in between retaining draws for averaging
+gINFOSKIP &lt;- 1000    # How frequently to print info about the iteration process
+
+control &lt;- list(
+  modelname = modelname,
+  gVarNamesNormal = gVarNamesNormal,
+  #gVarNamesFixed = gVarNamesFixed,
+  svN = svN,
+  #constraintsNorm = constraintsNorm,
+  #FC = FC,
+  gDIST = gDIST,
+  gNCREP = gNCREP,
+  gNEREP = gNEREP,
+  gNSKIP = gNSKIP,
+  gINFOSKIP = gINFOSKIP,
+  targetAcceptanceNormal = 0.234,
+  gSeed = 1984
+)
+
+
+#HIT RATE TESTING:
+#   HIT.TEST &lt;- dplyr::filter(choicedata, Task==5)
+#   write.csv(HIT.TEST,&quot;RSGHB hit_test - noOil - negNormP.csv&quot;, row.names = FALSE)
+
+
+#filtering obs:
+# choicedata &lt;- dplyr::filter(choicedata, Task!=5)
+
+# Estimate the model
+# model &lt;- doHB(likelihood, choicedata, control)
+
+# Save model object
+######## save(model, file = paste0(model$modelname, &quot;.RData&quot;))
+
+# write the model utilities
+# write.csv(model$C,&quot;RSGHB utilities - Best - negNormP -censored.csv&quot;, row.names = FALSE)</code></pre>
 </div>
 
 <footer role="contentinfo" id="site-footer">

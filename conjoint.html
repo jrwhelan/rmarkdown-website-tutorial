@@ -13,13 +13,22 @@
 
 <title>Conjoint Analysis</title>
 
-<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.7/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -34,11 +43,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -51,32 +55,6 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
 
 
 
@@ -87,10 +65,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -107,40 +81,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 54px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 59px;
-  margin-top: -59px;
-}
-.section h2 {
-  padding-top: 59px;
-  margin-top: -59px;
-}
-.section h3 {
-  padding-top: 59px;
-  margin-top: -59px;
-}
-.section h4 {
-  padding-top: 59px;
-  margin-top: -59px;
-}
-.section h5 {
-  padding-top: 59px;
-  margin-top: -59px;
-}
-.section h6 {
-  padding-top: 59px;
-  margin-top: -59px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -168,7 +115,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -180,7 +127,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -191,10 +138,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -206,7 +166,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -283,6 +242,9 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="nbahb.html">Basketball Prediction</a>
+</li>
+<li>
   <a href="conjoint.html">Conjoint Analysis</a>
 </li>
       </ul>
@@ -293,7 +255,7 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -306,8 +268,18 @@ $(document).ready(function () {
 <h2>Introduction</h2>
 <p>Discrete choice models enable market researchers to make predictions on what kinds of products might have the best chance to succeed in the market. The advantage that choice methods have in market research is that you can strategically ask survey respondents to make choices on products they would buy and then infer their preferences based on the choices they made. An exercise like this is more intuitive and more likely to reflect a respondent’s actual behaviour. We can’t replicate the in-store experience, but asking someone “how likely would you be to buy this product?” directly can often be tough for respondents to accurately judge.</p>
 <p>These choice models take many different forms, but one common type in market research is <code>conjoint</code> analysis. The conjoint analysis technique proposes that products are broken down to components or main features, which can then vary randomly among a set of options. By building sets of options with strategic, or random, variations and asking survey respondents to say which (if any) they would purchase on a shopping trip we can model the choices to determine a valuation for each component. Then we can use those results to optimize product offering to give them the best chance to get attention from customers.</p>
-<p><a href="https://formr.org"><code>formr</code></a> offers an interesting interface to build and run surveys with <code>R</code>.</p>
+<p><a href="https://formr.org"><code>formr</code></a> offers an interesting interface to build and run surveys with <code>R</code>. Because it leverages <code>R</code> code, you can run code chunks within a survey, which allows us to do a lot of interesting things with experimental designs and choice experiments, we consider a conjoint exercise in here.</p>
 <hr />
+</div>
+<div id="formr" class="section level2">
+<h2>formr</h2>
+<p>To use <a href="https://formr.org"><code>formr</code></a>, sign up on their website and request an admin token from the developers. This admin token allows you to set up surveys by specifying questions in a Google Sheet or .xlsx document. They provide an example demo of question types <a href="https://formr.org/documentation#sample_survey_sheet">here</a>.</p>
+<p>One helpful resource along my way was another <a href="https://github.com/jhelvy/formr4conjoint">conjoint tutorial</a> for formr by <a href="https://github.com/jhelvy">John Helveston</a>.</p>
+<hr />
+</div>
+<div id="design" class="section level2">
+<h2>Design</h2>
+<p>Choice methodologies are constructed as an experiment, where we ask respondents to consider a set of alternatives and choose their favourite or what they would buy on a shopping trip. As we attempt to build a random utility maximization model around the components of products, we want our model to be able to disentangle the values of various components by building an efficient design.</p>
 </div>
 
 <footer role="contentinfo" id="site-footer">
@@ -343,7 +315,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
