@@ -21,6 +21,9 @@ historyCut <- year(today)-2
 playerRef <- nba_players()
 teamRef <- nba_teams()
 
+teamCodes <- teamRef %>%
+	dplyr::select(slugTeam, idTeam)
+
 playerLogs <- game_logs(
   seasons = 2019,
   league = "NBA",
@@ -40,6 +43,33 @@ teamLogs <- game_logs(
   assign_to_environment = TRUE,
   return_message = TRUE
 )
+
+
+winners <- teamLogs %>%
+    dplyr::filter(locationGame=="H") %>%
+    mutate(n=1) %>%
+    pivot_wider(
+      id_cols = idGame,
+      names_from = slugTeamWinner,
+      names_prefix = "win_",
+      values_from = n,
+      values_fill = list(n = 0)
+    )
+
+
+losers <- teamLogs %>%
+    dplyr::filter(locationGame=="H") %>%
+    mutate(n=1) %>%
+    pivot_wider(
+      id_cols = idGame,
+      names_from = slugTeamLoser,
+      names_prefix = "lose_",
+      values_from = n,
+      values_fill = list(n = 0)
+    )
+
+winloss <- winners %>%
+	left_join(losers)
 
 ```
 
