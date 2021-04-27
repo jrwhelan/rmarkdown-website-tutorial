@@ -371,8 +371,8 @@ for (i in 1:(length(teamList)-1)){
 g2 &lt;- glue(&#39;{g2} B_{teamList[length(teamList)]}*choicedata$lose_{teamList[length(teamList)]} &#39;)
 
 j &lt;- glue(&#39;p &lt;- (exp(v1)*choicedata$choice1 + exp(v2)*choicedata$choice2) / (exp(v1) + exp(v2))&#39;)
-z &lt;- glue(&#39;likelihood &lt;- function(fc, b) {{ cc &lt;- 1; {n} {g1}; {g2}; {j}; return(p) }}&#39;)
-eval(parse(text=z))
+#z &lt;- glue(&#39;likelihood &lt;- function(fc, b) {{ cc &lt;- 1; {n} {g1}; {g2}; {j}; return(p) }}&#39;)
+#eval(parse(text=z))
 # ---------------------------------------------------------------------------
 
 
