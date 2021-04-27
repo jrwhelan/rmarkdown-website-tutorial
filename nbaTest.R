@@ -6,6 +6,14 @@ library(lubridate)
 today <- today(tzone = "EST")
 historyCut <- year(today)-2
 
+
+allNBAplayers <- all_nba_teams() %>%
+  dplyr::filter(yearSeason >= historyCut) %>%
+  dplyr::select(namePlayer) %>%
+  dplyr::distinct()
+
+
+
 playerRef <- nba_players()
 teamRef <- nba_teams()
 
@@ -17,6 +25,7 @@ playerLogs <- game_logs(
   league = "NBA",
   result_types = "player",
   season_types = "Regular Season",
+  cols = c(dataTables),
   nest_data = F,
   assign_to_environment = TRUE,
   return_message = TRUE
@@ -26,7 +35,8 @@ teamLogs <- game_logs(
   seasons = historyCut:year(today),
   league = "NBA",
   result_types = "team",
-  season_types = "Regular Season",
+  season_types = "Regular Season",  
+  cols = c(dataTables),
   nest_data = F,
   assign_to_environment = TRUE,
   return_message = TRUE
