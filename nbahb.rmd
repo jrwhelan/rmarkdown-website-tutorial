@@ -105,9 +105,21 @@ teamList <- teamnames$slugTeam
 
 # ---------------------------------------------------------------------------
 # THE LIKELIHOOD FUCNTION
+
+fixed <- FALSE
+
+if (fixed==TRUE) {
+# FIXED PARAMS
+n <- ""
+for (i in 1:length(teamList)){
+  n <- glue('{n} B_{teamList[i]} <- fc[cc]; cc <- cc + 1;')
+}
+} else {
+# RANDOM PARAMS
 n <- ""
 for (i in 1:length(teamList)){
 	n <- glue('{n} B_{teamList[i]} <- b[, cc]; cc <- cc + 1;')
+}
 }
 
 g1 <- glue('v1 <- ')
@@ -122,29 +134,10 @@ for (i in 1:(length(teamList)-1)){
 }
 g2 <- glue('{g2} B_{teamList[length(teamList)]}*choicedata$lose_{teamList[length(teamList)]} ')
 
-j <- glue('p <- (exp(v1)) / (exp(v1) + exp(v2))')
+j <- glue('p <- (exp(v1)*choicedata$choice1 + exp(v2)*choicedata$choice2) / (exp(v1) + exp(v2))')
 z <- glue('likelihood <- function(fc, b) {{ cc <- 1; {n} {g1}; {g2}; {j}; return(p) }}')
 eval(parse(text=z))
 # ---------------------------------------------------------------------------
-
-# used for output
-modelname <- "simpleCompare" 
-
-#parameter names
-gVarNamesNormal <- glue("B_{teamList}")
-number_of_parameters <- length(gVarNamesNormal)
-
-# price is negative log normal, gDist = 3
-gDIST <- c(rep(1, length(teamList)))
-#gVarNamesFixed <- paste0("lambda",1:4)
-
-# STARTING VALUES
-svN <- rep(0, number_of_parameters)     # for the random coefficients
-#FC  <- c(0.5, 0.5, 0.5, 0.5)           # for the fixed coefficients
-
-# price constraints
-#constraintsNorm <- list(c(38, 1, 0))
-#constraintsNorm <- list(c(44, 1, 43), c(43, 1, 42), c(42, 1, 41), c(41, 1, 40), c(40, 1, 39), c(39, 1, 38))
 
 
 # ITERATION SETTINGS
@@ -153,13 +146,38 @@ gNEREP    <- 2000  # Number of iterations to keep for averaging after convergenc
 gNSKIP    <- 10   # Number of iterations to do in between retaining draws for averaging
 gINFOSKIP <- 1000    # How frequently to print info about the iteration process
 
+iters <- gNCREP + (gNEREP*gNSKIP)
+
+
+
+if (fixed==TRUE) {
+# FIXED PARAMS
+modelname <- "simpleCompare-aggregate" 
+gVarNamesFixed <- glue("B_{teamList}")
+FC <- rep(0, length(teamList))         # for the fixed coefficients
+
+control <- list(
+  modelname = modelname,
+  gVarNamesFixed = gVarNamesFixed,
+  FC = FC,
+  gNCREP = gNCREP,
+  gNEREP = gNEREP,
+  gNSKIP = gNSKIP,
+  gINFOSKIP = gINFOSKIP,
+  targetAcceptanceNormal = 0.234,
+  gSeed = 1984
+)
+} else {
+# RANDOM PARAMS
+modelname <- "simpleCompare" 
+gVarNamesNormal <- glue("B_{teamList}")
+gDIST <- c(rep(1, length(teamList)))
+svN <- rep(0, length(teamList))     # for the random coefficients
+
 control <- list(
   modelname = modelname,
   gVarNamesNormal = gVarNamesNormal,
-  #gVarNamesFixed = gVarNamesFixed,
   svN = svN,
-  #constraintsNorm = constraintsNorm,
-  #FC = FC,
   gDIST = gDIST,
   gNCREP = gNCREP,
   gNEREP = gNEREP,
@@ -168,6 +186,7 @@ control <- list(
   targetAcceptanceNormal = 0.234,
   gSeed = 1984
 )
+}
 
 
 #HIT RATE TESTING:
