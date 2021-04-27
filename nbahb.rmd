@@ -135,8 +135,8 @@ for (i in 1:(length(teamList)-1)){
 g2 <- glue('{g2} B_{teamList[length(teamList)]}*choicedata$lose_{teamList[length(teamList)]} ')
 
 j <- glue('p <- (exp(v1)*choicedata$choice1 + exp(v2)*choicedata$choice2) / (exp(v1) + exp(v2))')
-#z <- glue('likelihood <- function(fc, b) {{ cc <- 1; {n} {g1}; {g2}; {j}; return(p) }}')
-#eval(parse(text=z))
+# z <- glue('likelihood <- function(fc, b) {{ cc <- 1; {n} {g1}; {g2}; {j}; return(p) }}')
+# eval(parse(text=z))
 # ---------------------------------------------------------------------------
 
 
